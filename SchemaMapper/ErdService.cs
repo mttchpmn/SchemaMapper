@@ -4,9 +4,18 @@ namespace SchemaMapper;
 
 public class ErdService : IDiagramService
 {
-    public string GenerateDiagram(List<Table> tables)
+    private string _foreignKeyColor = "blue";
+    private string _primaryKeyColor = "red";
+    private string _headerColor = "green";
+
+    public string GenerateDiagram(string title, List<Table> tables)
     {
         var result = new StringBuilder();
+
+        result.Append($"title {{label: \"{title}\"}}\n");
+        result.Append($"header {{color: \"{_headerColor}\"}}\n");
+        result.Append($"entity {{border-color: \"{_headerColor}\"}}\n");
+        result.Append($"relationship {{color: \"{_foreignKeyColor}\"}}\n");
 
         foreach (var table in tables)
         {
@@ -21,30 +30,39 @@ public class ErdService : IDiagramService
     }
 
     private string GenerateRelationship(ForeignKey fKey)
-        => $"{fKey.TableName.ToUpper()} +--+ {fKey.ForeignTableName.ToUpper()} {{label: \"{fKey.TableName}.{fKey.ColumnName} = {fKey.ForeignTableName}.{fKey.ForeignColumnName}\", color: \"#0832bd\"}}\n";
+        =>
+            $"{fKey.TableName.ToUpper()} +--+ {fKey.ForeignTableName.ToUpper()} {{label: \"{fKey.TableName}.{fKey.ColumnName} = {fKey.ForeignTableName}.{fKey.ForeignColumnName}\"}}\n";
 
     private string GenerateEntity(Table table)
     {
         var result = new StringBuilder();
-      
+
         result.Append($"[{table.Name.ToUpper()}]\n");
 
         foreach (var column in table.Columns)
         {
+            var spacer = "    ";
+            var nullable = column.IsNullable
+                ? "nullable"
+                : "non-nullable";
+
             var fKeys = table.ForeignKeys.Select(x => x.ColumnName);
             if (fKeys.Contains(column.Name))
             {
                 // Mark column as foreign key
-                result.Append('+');
+                result.Append(
+                    $"+`{column.Name}{spacer}` {{label: \"{column.DataType}, {nullable}\", color: \"{_foreignKeyColor}\"}}\n");
+                continue;
             }
 
             if (column.IsPrimaryKey)
             {
                 // Mark column as primary key
-                result.Append('*');
+                result.Append($"*`{column.Name}{spacer}` {{label: \"{column.DataType}, {nullable}\", color: \"{_primaryKeyColor}\"}}\n");
+                continue;
             }
-         
-            result.Append($"{column.Name} {{label: \" {column.DataType}\"}}\n");
+
+            result.Append($"`{column.Name}{spacer}` {{label: \" {column.DataType}, {nullable}\"}}\n");
         }
 
         return result.ToString();

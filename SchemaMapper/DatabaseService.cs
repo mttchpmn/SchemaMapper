@@ -47,12 +47,13 @@ public class DatabaseService
     {
         await using var connection = _connectionFactory.GetConnection();
 
-        var sql = "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = @TableName";
+        var sql =
+            "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = @TableName";
 
         var result = await connection.QueryAsync<DbColumn>(sql, new {TableName = tableName});
         var primaryKeys = await GetPrimaryKeysForTable(tableName);
 
-        return result.Select(x => new Column(x.column_name, x.data_type, primaryKeys.Contains(x.column_name))).ToList();
+        return result.Select(x => new Column(x.column_name, x.data_type, primaryKeys.Contains(x.column_name), x.is_nullable.Equals("YES"))).ToList();
     }
 
     private async Task<List<string>> GetPrimaryKeysForTable(string tableName)
@@ -100,7 +101,7 @@ public class DatabaseService
             x.foreign_column_name)).ToList();
     }
 
-    private record DbColumn(string column_name, string data_type);
+    private record DbColumn(string column_name, string data_type, string is_nullable);
 
     private record DbForeignKey(string table_schema, string constraint_name, string table_name, string column_name,
         string foreign_table_schema, string foreign_table_name, string foreign_column_name);
@@ -108,7 +109,7 @@ public class DatabaseService
 
 public record Table(string Name, List<Column> Columns, List<ForeignKey> ForeignKeys, List<string> References);
 
-public record Column(string Name, string DataType, bool IsPrimaryKey);
+public record Column(string Name, string DataType, bool IsPrimaryKey, bool IsNullable);
 
 public record ForeignKey(string Name, string TableName, string ForeignTableName, string ColumnName,
     string ForeignColumnName);
