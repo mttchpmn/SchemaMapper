@@ -50,8 +50,26 @@ public class DatabaseService
         var sql = "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = @TableName";
 
         var result = await connection.QueryAsync<DbColumn>(sql, new {TableName = tableName});
+        var primaryKeys = await GetPrimaryKeysForTable(tableName);
 
-        return result.Select(x => new Column(x.column_name, x.data_type)).ToList();
+        return result.Select(x => new Column(x.column_name, x.data_type, primaryKeys.Contains(x.column_name))).ToList();
+    }
+
+    private async Task<List<string>> GetPrimaryKeysForTable(string tableName)
+    {
+        await using var connection = _connectionFactory.GetConnection();
+        var sql = @"SELECT
+                       kcu.column_name
+                   FROM
+                       information_schema.table_constraints AS tc
+                       JOIN information_schema.key_column_usage AS kcu
+                         ON tc.constraint_name = kcu.constraint_name
+                         AND tc.table_schema = kcu.table_schema
+                   WHERE tc.constraint_type = 'PRIMARY KEY' AND tc.table_name=@TableName";
+
+        var primaryKeys = await connection.QueryAsync<string>(sql, new {TableName = tableName});
+
+        return primaryKeys.ToList();
     }
 
     private async Task<List<ForeignKey>> GetForeignKeysForTable(string tableName)
@@ -90,7 +108,7 @@ public class DatabaseService
 
 public record Table(string Name, List<Column> Columns, List<ForeignKey> ForeignKeys, List<string> References);
 
-public record Column(string Name, string DataType);
+public record Column(string Name, string DataType, bool IsPrimaryKey);
 
 public record ForeignKey(string Name, string TableName, string ForeignTableName, string ColumnName,
     string ForeignColumnName);

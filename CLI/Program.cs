@@ -18,11 +18,15 @@ var sorter = new TableSorter();
 
 var sorted = sorter.SortTables(tables.Where(x => x.References.Any()).ToList());
 
-foreach (var tableList in sorted)
-{
-    var diagram = mermaidService.GenerateDiagram(tableList);
-    var stop = "here";
-}
+var diagram = mermaidService.GenerateDiagram(tables);
+var erd = new ErdService().GenerateDiagram(tables);
+// foreach (var tableList in sorted)
+// {
+//     var diagram = mermaidService.GenerateDiagram(tableList);
+//     var stop = "here";
+// }
 
-// File.WriteAllText("result.txt", diagram);
+File.WriteAllText("result.txt", diagram);
+var path = Directory.GetCurrentDirectory() + "../../../../../result.erd";
+File.WriteAllText(path, erd);
 Console.WriteLine("DONE.");

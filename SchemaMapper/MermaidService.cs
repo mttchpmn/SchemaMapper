@@ -2,7 +2,7 @@
 
 namespace SchemaMapper;
 
-public class MermaidService
+public class MermaidService : IDiagramService
 {
    public string GenerateDiagram(List<Table> tables)
    {
