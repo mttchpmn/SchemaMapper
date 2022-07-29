@@ -2,5 +2,5 @@
 
 public interface IDiagramService
 {
-    public string GenerateDiagram(string title, List<Table> tables);
+    public string GenerateDiagram(string? title, List<Table> tables);
 }

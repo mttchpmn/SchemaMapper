@@ -4,7 +4,7 @@ namespace SchemaMapper;
 
 public class MermaidService : IDiagramService
 {
-   public string GenerateDiagram(string title, List<Table> tables)
+   public string GenerateDiagram(string? title, List<Table> tables)
    {
       var result = new StringBuilder();
       result.Append("erDiagram\n");

@@ -8,11 +8,15 @@ public class ErdService : IDiagramService
     private string _primaryKeyColor = "red";
     private string _headerColor = "green";
 
-    public string GenerateDiagram(string title, List<Table> tables)
+    public string GenerateDiagram(string? title, List<Table> tables)
     {
         var result = new StringBuilder();
 
-        result.Append($"title {{label: \"{title}\"}}\n");
+        if (title != null)
+        {
+            result.Append($"title {{label: \"{title}\"}}\n");
+        }
+
         result.Append($"header {{color: \"{_headerColor}\"}}\n");
         result.Append($"entity {{border-color: \"{_headerColor}\"}}\n");
         result.Append($"relationship {{color: \"{_foreignKeyColor}\"}}\n");
@@ -58,11 +62,12 @@ public class ErdService : IDiagramService
             if (column.IsPrimaryKey)
             {
                 // Mark column as primary key
-                result.Append($"*`{column.Name}{spacer}` {{label: \"{column.DataType}, {nullable}\", color: \"{_primaryKeyColor}\"}}\n");
+                result.Append(
+                    $"*`{column.Name}{spacer}` {{label: \"{column.DataType}, {nullable}\", color: \"{_primaryKeyColor}\"}}\n");
                 continue;
             }
 
-            result.Append($"`{column.Name}{spacer}` {{label: \" {column.DataType}, {nullable}\"}}\n");
+            result.Append($"`{column.Name}{spacer}` {{label: \"{column.DataType}, {nullable}\"}}\n");
         }
 
         return result.ToString();
