@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
+      <PackageReference Include="RestSharp" Version="108.0.1" />
     </ItemGroup>
 
 </Project>

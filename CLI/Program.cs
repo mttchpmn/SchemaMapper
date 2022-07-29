@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using RestSharp;
 using SchemaMapper;
 
 namespace CLI;
@@ -40,5 +41,21 @@ public class Program
         await File.WriteAllTextAsync(fileName, diagram);
 
         Console.WriteLine($"Diagram saved successfully as {fileName}");
+
+        var client = new RestClient("https://kroki.io");
+        var request = new RestRequest();
+        var payload = new
+        {
+            diagram_source = diagram,
+            diagram_type = "erd",
+            output_format = "svg"
+        };
+        request.AddJsonBody(payload);
+        // request.AddFile("file", fileName);
+        var response = await client.PostAsync(request);
+
+        await File.WriteAllTextAsync("result.svg", response.Content);
+
+        Console.WriteLine("Diagram saved as result.svg");
     }
 }
