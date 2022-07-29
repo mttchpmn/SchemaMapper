@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "CLI\CLI.csproj", "{66700800-3A0E-459E-A1C8-1EBB6109483A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaMapper", "SchemaMapper\SchemaMapper.csproj", "{F690A7DA-63E3-4448-B1E1-2D206CE227B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{66700800-3A0E-459E-A1C8-1EBB6109483A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66700800-3A0E-459E-A1C8-1EBB6109483A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66700800-3A0E-459E-A1C8-1EBB6109483A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66700800-3A0E-459E-A1C8-1EBB6109483A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F690A7DA-63E3-4448-B1E1-2D206CE227B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F690A7DA-63E3-4448-B1E1-2D206CE227B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F690A7DA-63E3-4448-B1E1-2D206CE227B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F690A7DA-63E3-4448-B1E1-2D206CE227B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
