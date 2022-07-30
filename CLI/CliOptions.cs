@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using SchemaMapper;
 
 namespace CLI;
 
@@ -15,10 +16,4 @@ public class CliOptions
     
     [Option('t', "title", HelpText = "The title of the diagram")]
     public string? Title { get; set; }
-}
-
-public enum DiagramType
-{
-    Erd,
-    Mermaid
 }
