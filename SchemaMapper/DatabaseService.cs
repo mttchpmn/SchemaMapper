@@ -11,9 +11,9 @@ public class DatabaseService
         _connectionFactory = connectionFactory;
     }
 
-    public async Task<List<Table>> GetTables()
+    public async Task<List<Table>> GetTables(List<string>? tablesToInclude)
     {
-        var tableNames = await GetTableNames();
+        var tableNames = tablesToInclude ?? await GetTableNames();
 
         var tableTasks = tableNames.Select(async tableName =>
         {

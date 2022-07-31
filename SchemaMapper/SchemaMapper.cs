@@ -21,31 +21,34 @@ public class SchemaMapper
         _renderService = new RenderService();
     }
 
-    public async Task RenderDiagram(DiagramType diagramType, string? title, string? filename)
+    public async Task RenderDiagram(DiagramType diagramType, string? title, string? filename, List<string>? tablesToInclude)
     {
-        var textualRepresentation = await GetTextualRepresentation(diagramType, title);
+        var textualRepresentation = await GetTextualRepresentation(diagramType, title, tablesToInclude);
         await RenderTextualRepresentation(diagramType, filename, textualRepresentation);
     }
 
-    public async Task GenerateTextualRepresentation(DiagramType diagramType, string? title, string? fileName)
+    public async Task GenerateTableList()
     {
-        var textualRepresentation = await GetTextualRepresentation(diagramType, title);
+        var tables = await _databaseService.GetTables(null);
+        var names = tables.Select(x => x.Name);
+        var result = string.Join('\n', names);
+
+        var path = Directory.GetCurrentDirectory() + "/tables.txt";
+        
+        await File.WriteAllTextAsync(path, result);
+    }
+
+    public async Task GenerateTextualRepresentation(DiagramType diagramType, string? title, string? fileName, List<string>? tableFilter)
+    {
+        var textualRepresentation = await GetTextualRepresentation(diagramType, title, tableFilter);
 
         var path = GetPath(diagramType, fileName) + "." + GetFileType(diagramType);
 
         await File.WriteAllTextAsync(path, textualRepresentation);
     }
 
-    private async Task<string> GetTextualRepresentation(DiagramType diagramType, string? title)
-    {
-        var diagramService = GetDiagramService(diagramType);
-        var tables = await _databaseService.GetTables();
-
-        var textualRepresentation = diagramService.GenerateDiagram(title, tables);
-        return textualRepresentation;
-    }
-
-    public async Task RenderTextualRepresentation(DiagramType diagramType, string? fileName, string textualRepresentation)
+    public async Task RenderTextualRepresentation(DiagramType diagramType, string? fileName,
+        string textualRepresentation)
     {
         var path = GetPath(diagramType, fileName) + "svg";
         var rendered = await _renderService.RenderDiagram(textualRepresentation, diagramType);
@@ -53,6 +56,15 @@ public class SchemaMapper
         await File.WriteAllTextAsync(path, rendered);
     }
 
+    private async Task<string> GetTextualRepresentation(DiagramType diagramType, string? title,
+        List<string>? tablesToInclude)
+    {
+        var diagramService = GetDiagramService(diagramType);
+        var tables = await _databaseService.GetTables(tablesToInclude);
+
+        var textualRepresentation = diagramService.GenerateDiagram(title, tables);
+        return textualRepresentation;
+    }
 
     private string GetPath(DiagramType diagramType, string? fileName)
     {
@@ -71,7 +83,7 @@ public class SchemaMapper
             _ => throw new ArgumentOutOfRangeException(nameof(diagramType), diagramType, null)
         };
     }
-    
+
     private string GetFileType(DiagramType diagramType)
     {
         return diagramType switch
